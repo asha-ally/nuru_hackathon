@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Nuru.Live</string>
+    <string name="action_settings">Settings</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="ViewNote">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda et explicabo voluptate? Exercitationem iure minus neque, nisi nobis tempore! Ad animi cum cupiditate, id minus repellat sed tempore voluptatem voluptatum.</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="title_activity_add_post">PostActivity</string>
+    <string name="view_post">ViewPost</string>
+    <string name="cancel">Cancel</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="search_hint">Enter tag</string>
+    <string name="action_search">Search</string>
+
+    <!-- RageChips-->
+    <string name="label_chip_tag">Select Tag(s) to Assign:</string>
+    <string name="enter_chip_txt">Or enter other tags...</string>
+    <string name="label_chip_more">Use commas to generate tags</string>
+
+    <string name="lbl_caution">Nuru.Live</string>
+    <string name="lbl_msg_save">Save Data?</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_no">No</string>
+    <string name="lbl_close">Close</string>
+
+    <!-- Rage Camera / Files -->
+    <string name="file_provider_authority" translatable="false">com.openinstitute.nuru</string> <!--.fileprovider-->
+
+
+    <string-array name="project_array">
+        <item>Projects</item>
+        <item>Dummy Project</item>
+    </string-array>
+
+    <string-array name="category_array">
+        <item>Update</item>
+        <item>Comment</item>
+        <item>Report</item>
+    </string-array>
+
+    <string-array name="tag_array">
+        <item>Work</item>
+        <item>Personal</item>
+    </string-array>
+
+
+</resources>

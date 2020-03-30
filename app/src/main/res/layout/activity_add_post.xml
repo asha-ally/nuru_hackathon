@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PostActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:padding="@dimen/item_offset">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnAddPhoto"
+                    android:layout_width="53dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/design_default_color_surface"
+                    android:backgroundTint="@color/design_default_color_surface"
+                    android:drawableLeft="@drawable/ic_add_a_photo_24dp"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:textAllCaps="false" />
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:drawableLeft="@drawable/ic_keyboard_voice_24dp"
+                    android:drawablePadding="7dp"
+                    android:id="@+id/btnAddVoiceNote"
+                    android:layout_width="53dp"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@color/design_default_color_surface"
+                    />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+                <!--            android:hint="Attach file"-->
+                <!--            android:hint="Add Voice Note"-->
+                <!--            android:hint="Add Photo"-->
+
+                <Button
+                    android:drawableLeft="@drawable/ic_attach_file_black_24dp"
+                    android:drawablePadding="7dp"
+                    android:id="@+id/btnInsertFile"
+                    android:layout_width="53dp"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@color/design_default_color_surface"
+
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/design_default_color_surface"
+                    android:backgroundTint="@color/colorAccent"
+                    android:drawablePadding="9dp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textColorHint="@color/colorWhite"
+                    android:hint="Save"
+                    android:textSize="20dp"
+                    android:layout_marginTop="3dp"
+                    />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_offset"
+                >
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_note_pink"
+                    android:hint="Share Comment/Update/Report..."
+
+                    android:minLines="3"
+                    android:maxLines="10"
+                    android:gravity="top|left"/>
+                <!--android:lines="3"-->
+            </RelativeLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+
+                <Spinner
+                    android:id="@+id/project_array"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/project_array"
+                    android:padding="12dp"
+                    android:visibility="gone"
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/category_array"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/category_array"
+                    android:padding="16dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+
+                <Spinner
+                    android:id="@+id/tag_array"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/tag_array"
+                    android:padding="16dp"
+                    android:visibility="gone"
+                    />
+
+
+            </LinearLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_offset"
+                >
+
+                <TextView
+                    android:id="@+id/lbl_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="17dp"
+                    android:text="@string/label_chip_tag">
+                </TextView>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/txt_tags_chipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/item_offset"
+                    android:layout_marginBottom="@dimen/item_offset"
+                    android:layout_below="@+id/lbl_tags"
+                    />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_chip_txt"
+                    android:background="@color/cardview_light_background"
+                    android:layout_below="@+id/txt_tags_chipGroup"
+                    android:layout_marginBottom="@dimen/item_offset"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_tags"
+                    android:text="@string/label_chip_more"
+                    android:textSize="16dp"
+                    android:textStyle="italic"></TextView>
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvlongitude"
+                android:visibility="gone"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvlatitude"
+                android:visibility="gone"
+                />
+
+
+
+            <!--<Button
+                android:background="@drawable/bg_button_pink"
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Save"/>-->
+
+            <ImageView
+                android:id="@+id/imgView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"/>
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

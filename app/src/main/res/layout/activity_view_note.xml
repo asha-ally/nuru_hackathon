@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ViewPost">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+<!--    </androidx.core.widget.NestedScrollView>-->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="55dp"
+        >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/item_offset"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+
+
+<!--            <com.android.volley.toolbox.NetworkImageView-->
+<!--                android:layout_below="@+id/imageView"-->
+<!--                android:id="@+id/imageViewB"-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:visibility="gone"-->
+<!--                />-->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_offset"
+                android:textColor="@android:color/white"
+                android:textSize="21dp"
+                android:text="date value here"
+                android:background="@color/colorTransparent"
+                />
+            <ImageView
+                android:id="@+id/post_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:alpha="1"
+                android:visibility="visible"
+                />
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:padding="10dp"
+            android:text="@string/ViewNote"
+            android:textSize="19dp"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/tvTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Post Tags"
+            android:textStyle="italic"
+            android:paddingBottom="10dp"
+            android:textSize="19dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="10dp"
+            android:visibility="visible"
+            android:textColor="@color/colorAccent"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/item_offset"
+            android:gravity="center"
+            >
+
+            <!--
+
+            android:paddingLeft="5dp"
+            android:paddingBottom="@dimen/item_offset"
+            android:paddingRight="5dp"-->
+
+            <!--<ImageView
+                android:paddingLeft="10dp"
+                android:id="@+id/btnAddPhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:src="@drawable/ic_gps_fixed_black_24dp"
+                android:textAllCaps="false"/>-->
+
+            <Button
+                android:id="@+id/btnViewLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/design_default_color_surface"
+                android:backgroundTint="@color/design_default_color_surface"
+                android:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
+                android:drawablePadding="9dp"
+                android:text="Location"
+                android:textAllCaps="false"
+                android:textColor="@color/colorGrayDark" />
+
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:layout_marginTop="0dp"
+                android:textAllCaps="false"
+                android:background="@android:color/white"
+                android:backgroundTint="@color/design_default_color_surface"
+                android:textColor="@color/colorGrayDark"
+                android:drawableLeft="@drawable/ic_mode_edit_black_24dp"/>
+
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_marginTop="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:textAllCaps="false"
+                android:background="@android:color/white"
+                android:backgroundTint="@color/design_default_color_surface"
+                android:textColor="@color/colorGrayDark"
+                android:drawableLeft="@drawable/ic_delete_black_24dp"/>
+
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:paddingBottom="7dp"
+                    android:id="@+id/latitude"
+                    android:text="1.8219"
+                    android:clickable="true"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:paddingBottom="7dp"
+                    android:id="@+id/spacer_latlong"
+                    android:text=", "
+                    android:clickable="false"
+                    android:layout_toRightOf="@id/latitude"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:id="@+id/longitude"
+                    android:text="36.2921"
+                    android:layout_toRightOf="@id/spacer_latlong"
+                    />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_play_circle_filled_black_24dp"
+                android:paddingLeft="15dp"
+                />
+
+            <SeekBar
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                />
+
+        </LinearLayout>
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:layout_marginTop="10dp"
+                android:textAllCaps="false"
+                android:background="@android:color/white"
+                android:textSize="16dp"
+                android:drawableLeft="@drawable/ic_mode_edit_black_24dp"/>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:textAllCaps="false"
+                android:background="@android:color/white"
+                android:textSize="16dp"
+                android:drawableLeft="@drawable/ic_delete_black_24dp"/>
+        </LinearLayout>-->
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            >
+            <fragment
+                android:id="@+id/maps"
+                class="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="330dp"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+    </ScrollView>
+
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+    <!--android:id="@+id/fab"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="bottom|end"-->
+    <!--android:layout_margin="@dimen/fab_margin"-->
+<!--    app:srcCompat="@android:drawable/ic_dialog_email" />-->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
