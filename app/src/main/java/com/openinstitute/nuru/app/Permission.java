@@ -79,10 +79,7 @@ public final class Permission {
     public static boolean verifyPermission (Activity activity, String permission_name) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, permission_name); //Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (permission == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
+        return permission == PackageManager.PERMISSION_GRANTED;
     }
 
 }

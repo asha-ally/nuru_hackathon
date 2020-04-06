@@ -3,7 +3,7 @@
     <color name="colorPrimary">#F6B21B</color>
     <color name="colorPrimaryDark">#d68239</color>
     <color name="colorAccent">#D79300</color>
-    <color name="album_title">#4c4c4c</color>
+    <color name="album_title_x">#4c4c4c</color>
     <color name="colorTransparent">#99000000</color>
 
     <color name="colorWhite">#FFFFFF</color>

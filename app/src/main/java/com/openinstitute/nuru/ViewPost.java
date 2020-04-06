@@ -11,9 +11,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +41,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.openinstitute.nuru.app.AppFunctions.func_showAlerts;
+
 public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
     TextView tvDescription, tvDate, tvTags, longitude, latitude;
     Button btnEdit;
@@ -48,8 +53,13 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
     Bundle ibundle;
     String bundleData;
     String bundlePostId;
+    String bundlePostSession;
     private BroadcastReceiver broadcastReceiver;
     MapFragment mapFragment;
+    LinearLayout linearLayout;
+
+    String val_longitude;
+    String val_latitude;
 
     int postId;
     GoogleMap mGoogleMap;
@@ -71,6 +81,7 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
         ibundle = getIntent().getExtras();
         bundleData = (String) ibundle.get("PostData");
         bundlePostId = (String) ibundle.get("PostId");
+        bundlePostSession = (String) ibundle.get("PostSession");
 
         tvDescription= findViewById(R.id.tvDescription);
         tvDate=findViewById(R.id.tvDate);
@@ -85,7 +96,8 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
 
         longitude=findViewById(R.id.longitude);
         latitude=findViewById(R.id.latitude);
-        iview=findViewById(R.id.post_imageview);
+//        iview=findViewById(R.id.post_imageview);
+        linearLayout=findViewById(R.id.container);
 
 
         int screenSize = getResources().getConfiguration().screenLayout &
@@ -149,6 +161,7 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,36 +169,58 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
                 Post clickedPost = new Post();
                 JSONObject asha = clickedPost.getPostAll();
                 String thePostData = String.valueOf(asha);
-                Log.d("postList asha", String.valueOf(asha));
+                //Log.d("postList asha", String.valueOf(asha));
 
-                Intent intent = new Intent(v.getContext(),PostActivity.class);
+                String PostSession = "";
 
-                intent.putExtra("PostActivity", String.valueOf(clickedPost));
-                intent.putExtra("PostData", bundleData); /*thePostData*/
-                intent.putExtra("PostAction", "_edit");
-                intent.putExtra("PostId", bundlePostId);
-                intent.putExtra("PostPosition", (String) ibundle.get("PostPosition"));
-                startActivity(intent);
+
+                    //PostSession = asha.getString("post_session");
+
+                    Intent intent = new Intent(v.getContext(),PostActivity.class);
+
+                    intent.putExtra("PostActivity", String.valueOf(clickedPost));
+                    intent.putExtra("PostData", bundleData); /*thePostData*/
+                    intent.putExtra("PostAction", "_edit");
+                    intent.putExtra("PostId", bundlePostId);
+                    intent.putExtra("PostSession", bundlePostSession);
+                    intent.putExtra("PostPosition", (String) ibundle.get("PostPosition"));
+                    startActivity(intent);
+
+
 
                 finish();
 
             }
         });
-        longitude.setOnClickListener(new View.OnClickListener() {
+
+
+        btnViewLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//
-                DisplayMap();
 
+                /*String latLong = val_latitude +","+ val_longitude;
+                Log.d("latLong", latLong);
+                Intent postMap = new Intent(v.getContext(), MapActivity.class);
+                postMap.putExtra("post_coordinates", latLong);
+                startActivity(postMap);*/
+                func_showAlerts(context, "Coming soon. We'll keep you posted.", "warning");
 
             }
-
-
-
         });
 
 
+        /*longitude.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DisplayMap();
+            }
+        });*/
+
+
     }
+
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getApplicationContext());
@@ -197,6 +232,7 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
           drawMarker(point);
 
     }
+
     public boolean DisplayMap (){
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
         if(status!= ConnectionResult.SUCCESS){ // Google Play Services are not available
@@ -208,7 +244,7 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
 
         }
         else {
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
+            //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
            mapFragment.getMapAsync(this);
 
 
@@ -254,16 +290,49 @@ public class ViewPost extends AppCompatActivity implements OnMapReadyCallback {
 
     public void displayPost(){
         try {
+            JSONObject jsnResources = databaseHelper.getResourceFiles(bundlePostId);
+
+            //Log.d("jsnResources", String.valueOf(jsnResources));
+
+
             JSONObject jsnobject = new JSONObject(bundleData);
 
-            /*Log.d("ka value", jsnobject.getString("post_details"));*/
+            //Log.d("bundlePostId", bundlePostId);
+            //Log.d("bundleData", jsnobject.toString());
+
             String tags = jsnobject.getString("post_tags").replace("|", "; ");
+
+            val_latitude = jsnobject.getString("post_latitude");
+            val_longitude = jsnobject.getString("post_longitude");
 
             tvDescription.setText( jsnobject.getString("post_details"));
             tvTags.setText(tags);
             tvDate.setText(jsnobject.getString("record_date"));
-            longitude.setText(jsnobject.getString("post_longitude"));
-            latitude.setText(jsnobject.getString("post_latitude"));
+
+            longitude.setText(val_longitude);
+            latitude.setText(val_latitude);
+
+
+
+            //Add Imageview
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            imageView.setImageResource(R.drawable.inducesmilelog);
+            String imageUrl = jsnobject.getString("image_url");
+
+            if (!imageUrl.equals("")){
+                Bitmap thumbnail = (BitmapFactory.decodeFile(imageUrl));
+                Log.w("image_path_a", imageUrl+"");
+                imageView.setImageBitmap(thumbnail);}
+            else {
+                imageView.setVisibility(View.GONE);
+            }
+            if (linearLayout != null) {
+                linearLayout.addView(imageView);
+            }
+
+
+
 
 
         } catch (JSONException e) {

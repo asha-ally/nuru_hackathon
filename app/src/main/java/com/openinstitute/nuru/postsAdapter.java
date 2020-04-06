@@ -220,13 +220,14 @@ public class postsAdapter extends RecyclerView.Adapter<postsAdapter.myViewHandle
             try {
                 thePost_id = asha.getString("post_Id");
 
-                Log.d("postList", String.valueOf(clickedPost));
-                Log.d("postList asha", String.valueOf(asha));
+                /*Log.d("postList", String.valueOf(clickedPost));
+                Log.d("postList asha", String.valueOf(asha));*/
 
                 Intent intent = new Intent(v.getContext(),ViewPost.class);
                 intent.putExtra("PostActivity", String.valueOf(clickedPost));
                 intent.putExtra("PostData", thePostData);
                 intent.putExtra("PostId", thePost_id);
+                intent.putExtra("PostSession", asha.getString("post_session"));
                 intent.putExtra("PostPosition", String.valueOf(position));
 
                 v.getContext().startActivity(intent);

@@ -24,7 +24,7 @@ public class GPS_Service extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    @SuppressLint("MissingPermission")
+    /*@SuppressLint("MissingPermission")*/
     @Override
     public void onCreate() {
         super.onCreate();

@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
      EditText _emailText ;
      EditText _passwordText ;
      Button _loginButton;
+     Button _signupButton;
      TextView _signupLink ;
      Context context;
      DatabaseHelper databaseHelper;
@@ -55,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         _passwordText = findViewById(R.id.input_password);
         _passwordText.setText(""); /*123456*/
         _loginButton = findViewById(R.id.btn_login);
+        _signupButton = findViewById(R.id.btn_signup);
         _signupLink = findViewById(R.id.link_signup);
         context = this;
         databaseHelper = new DatabaseHelper(this);
@@ -75,14 +77,14 @@ public class LoginActivity extends AppCompatActivity {
         /*if (user_logged == true) {*/
         if(user_email != null){
 
-            Log.d("user_email", "iko " + user_email);
+            //Log.d("user_email", "iko " + user_email);
             //displayMainActivity();
             //finish();
 
             /*Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent1);*/
         } else {
-            Log.d("user_email_login", "hakuna ");
+            //Log.d("user_email_login", "hakuna ");
         }
 
         //else {
@@ -136,6 +138,20 @@ public class LoginActivity extends AppCompatActivity {
             });
 
 
+
+            _signupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // Start the Signup activity
+                    Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                    startActivityForResult(intent, REQUEST_SIGNUP);
+
+                }
+            });
+
+
+
             _signupLink.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -152,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
     //login logic
 
     public void login() {
-        Log.d(TAG, "Login");
+        //Log.d(TAG, "Login");
 
         /*if (!validate()) {
             onLoginFailed();

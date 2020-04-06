@@ -218,37 +218,52 @@
                     android:layout_below="@+id/txt_tags"
                     android:text="@string/label_chip_more"
                     android:textSize="16dp"
-                    android:textStyle="italic"></TextView>
+                    android:textStyle="italic" />
             </RelativeLayout>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/item_offset"
+            android:paddingRight="@dimen/item_offset"
+            >
+
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvlongitude"
-                android:visibility="gone"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvlatitude"
-                android:visibility="gone"
-                />
-
-
-
-            <!--<Button
-                android:background="@drawable/bg_button_pink"
-                android:id="@+id/btnSave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Save"/>-->
-
-            <ImageView
-                android:id="@+id/imgView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"/>
+                android:id="@+id/tvlatitude"
+                android:text="lat"
+                android:visibility="visible"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvlongitude"
+                android:text="lng"
+                android:visibility="visible"
+                />
+
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/container"
+            android:orientation="horizontal"
+
+            >
+
+<!--            <ImageView-->
+<!--                android:id="@+id/imgView"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@color/colorPrimary"/>-->
+        </LinearLayout>
 
         </LinearLayout>
 

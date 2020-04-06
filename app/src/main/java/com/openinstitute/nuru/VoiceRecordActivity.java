@@ -32,10 +32,10 @@ public class VoiceRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_record);
 
-        startbtn = (Button)findViewById(R.id.btnRecord);
-        stopbtn = (Button)findViewById(R.id.btnStop);
-        playbtn = (Button)findViewById(R.id.btnPlay);
-        stopplay = (Button)findViewById(R.id.btnStopPlay);
+        startbtn = findViewById(R.id.btnRecord);
+        stopbtn = findViewById(R.id.btnStop);
+        playbtn = findViewById(R.id.btnPlay);
+        stopplay = findViewById(R.id.btnStopPlay);
         stopbtn.setEnabled(false);
         playbtn.setEnabled(false);
         stopplay.setEnabled(false);

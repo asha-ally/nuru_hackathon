@@ -29,6 +29,7 @@
     <string name="label_chip_more">Use commas to generate tags</string>
 
     <string name="lbl_caution">Nuru.Live</string>
+    <string name="lbl_welcome">Welcome to Nuru.Live. Already have an account? Log-in below, otherwise click on Register. </string>
     <string name="lbl_msg_save">Save Data?</string>
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>

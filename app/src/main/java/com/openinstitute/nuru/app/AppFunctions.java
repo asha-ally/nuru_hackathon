@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,8 +30,6 @@ public class AppFunctions extends Application {
     private static JSONObject formData = new JSONObject();
 
     static boolean isNotEmpty = true;
-
-
 
 
     public static void func_showToast(Context context, CharSequence msg) {
@@ -67,6 +66,24 @@ public class AppFunctions extends Application {
         }
         return flag;
     }
+
+
+
+
+    public static String func_getUserCoded(String user_email) {
+
+        String[] email_pieces = (String.valueOf(user_email)).split("@");
+        String piece_name = email_pieces[0];
+        String piece_dom = email_pieces[1];
+
+        String[] dom_pieces = (piece_dom).split("\\.");
+
+        String name_nira = piece_name + "_" + dom_pieces[0];
+        //String out = (str.trim().length() > len) ? str.trim().substring(0, len) + "..." : str;
+
+        return name_nira;
+    }
+
 
 
     public static String func_stringpart(String str, int len) {
@@ -132,7 +149,7 @@ public class AppFunctions extends Application {
     public static String func_formatDecimal(double val) {
 
         DecimalFormat form = new DecimalFormat("0.00");
-        String value_out = String.valueOf(form.format(val));
+        String value_out = form.format(val);
 
         return value_out;
     }

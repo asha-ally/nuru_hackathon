@@ -2,6 +2,9 @@ package com.openinstitute.nuru;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -20,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -52,9 +56,11 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +69,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -76,22 +83,32 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.chip.Chip;
+import com.openinstitute.nuru.utils.VolleyMultipartRequest;
+
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadService;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.FOREGROUND_SERVICE;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.openinstitute.nuru.app.AppFunctions.base64Encode;
+import static com.openinstitute.nuru.app.AppFunctions.func_getUserCoded;
 import static com.openinstitute.nuru.app.AppFunctions.func_showAlerts;
 import static com.openinstitute.nuru.app.AppFunctions.func_showToast;
 import static com.openinstitute.nuru.app.AppFunctions.isInternetConnected;
 import static com.openinstitute.nuru.app.Globals.CONF_APP_NAME;
+import static com.openinstitute.nuru.app.Globals.CONF_FILE_UPLOAD;
 import static com.openinstitute.nuru.app.Globals.msg_no_internet;
 
 
@@ -116,6 +133,7 @@ public class PostActivity extends AppCompatActivity {
 
     private String user_id;
     private String user_email;
+    private static String user_email_code;
     int postId;
     private String post_projects;
     private String post_tag;
@@ -130,7 +148,8 @@ public class PostActivity extends AppCompatActivity {
 
 
 
-    private String POSTS_API_URL="https://sand-box.online/nuru/api/ajbk_post.php";
+    private String POSTS_API_URL="https://nuru.live/dashboard/api/ajbk_post.php";
+    //private String POSTS_API_URL="http://sand-box.online/nuru/api/ajbk_post.php";
     //private String POSTS_API_URL="http://10.0.2.2/oireporting_web/api/ajbk_post.php";
 
     Bundle bundle;
@@ -140,6 +159,8 @@ public class PostActivity extends AppCompatActivity {
     String form_data;
     String form_post_id;
     String form_post_position;
+    String form_post_session;
+	LinearLayout linearLayout;
 
     /* Rage Camera */
     /*private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
@@ -161,7 +182,10 @@ public class PostActivity extends AppCompatActivity {
     /*ImageView imageView;*/
     Bitmap help1;
 
+    String picturePath;
     /* End:: RAGE CAMERA */
+
+    private  Bitmap bitmap;
 
 
 
@@ -198,6 +222,8 @@ public class PostActivity extends AppCompatActivity {
 
 
 
+    //TODO -- getOrientation() akulaku
+
 
 
 
@@ -206,20 +232,30 @@ public class PostActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
+
+        context = this;
+
         this.setTitle("Share What's Up!");
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        UploadService.NAMESPACE = "com.openinstitute.nuru";
 
         bundle = getIntent().getExtras();
 
         form_activity = bundle.getString("PostActivity");
-        form_action = bundle.getString("PostAction");
-        form_data = bundle.getString("PostData");
-        form_post_id = bundle.getString("PostId");
-        form_post_position = bundle.getString("PostPosition");
+        form_action = bundle.getString("PostAction", null);
+        form_data = bundle.getString("PostData", null);
+        form_post_id = bundle.getString("PostId", null);
+        form_post_position = bundle.getString("PostPosition", null);
+        form_post_session = bundle.getString("PostSession", null);
+	    linearLayout = this.findViewById(R.id.container);
 
 
-        Log.d("form_data", form_data);
+        //Log.d("test_int", ""+ Integer.parseInt("success"));
+        /*Log.d("form_data", form_data);*/
+        /*Log.d("form_post_session", form_post_session);*/
 
         focusView = null;
         imageUrl = "";
@@ -238,7 +274,7 @@ public class PostActivity extends AppCompatActivity {
 
 
 
-        imageView = findViewById(R.id.imgView);
+//        imageView = findViewById(R.id.imgView);
         imgView = findViewById(R.id.thumbnail);
         databaseHelper = new DatabaseHelper(this);
         btnSave = findViewById(R.id.btnSave);
@@ -247,6 +283,8 @@ public class PostActivity extends AppCompatActivity {
         user_id = prefs.getString("user_email",null);
         user_email = prefs.getString("user_email",null);
 
+        /*Log.d(TAG, "user_email: " + user_email);*/
+        user_email_code = func_getUserCoded(user_email);
 
         btnAddphoto = findViewById(R.id.btnAddPhoto);
         btnAddVoiceNote = findViewById(R.id.btnAddVoiceNote);
@@ -262,7 +300,7 @@ public class PostActivity extends AppCompatActivity {
 
         getPostId();
 
-        context = this;
+
 
         displayPost();
         CheckPermissions();
@@ -271,6 +309,7 @@ public class PostActivity extends AppCompatActivity {
             addDefaultChips();
             /*jsonObject.getString("post_details")*/
         } else {
+
             addSavedChips(chips_saved);
         }
         /*String tags = jsnobject.getString("post_tags").replace("|", "; ");*/
@@ -298,7 +337,7 @@ public class PostActivity extends AppCompatActivity {
                 if( s.length() != 0 ){
                     String lastChar = s.subSequence(endIndex - 1, endIndex).toString();
                     if( lastChar.equals(",") ){
-                        Log.d(TAG, "rage_chip_changed: " + s.toString());
+                        //Log.d(TAG, "rage_chip_changed: " + s.toString());
                         String trimmed = s.subSequence(startIndex, endIndex - 1).toString();
 
                         addChip(trimmed, "y");
@@ -374,7 +413,7 @@ public class PostActivity extends AppCompatActivity {
                 post_session = action_time_id;
                 post_category = "post_activity"; // category.getSelectedItem().toString();
                 post_longitude = tvlongitude.getText().toString();
-                post_latitude= tvlatitude.getText().toString();
+                post_latitude = tvlatitude.getText().toString();
 
                 int len_description = description.length();
                 int len_tags_selected = tags_selected.length();
@@ -403,7 +442,8 @@ public class PostActivity extends AppCompatActivity {
                     String result = "0";
     //
                     if(form_action.equals("_edit")) {
-                        Log.d("form_post_id", form_post_id);
+                        post_session = form_post_session;
+                        Log.d("form_post_id", form_post_session);
                     }
                     //PostActivity post =new PostActivity(title,description,date,imageUrl,audioUrl,user_id);
                     //databaseHelper.addPost(post);
@@ -411,9 +451,9 @@ public class PostActivity extends AppCompatActivity {
                     JSONObject post_b = new JSONObject();
                     try {
 
-                        /*if(form_action.equals("_edit")){
+                        if(form_action.equals("_edit")){
                             post_b.put("post_id", form_post_id);
-                        }*/
+                        }
                         //post_b.put("imageUrl", Url);
                         post_b.put("user_id", user_email);
                         post_b.put("description", description);
@@ -450,15 +490,27 @@ public class PostActivity extends AppCompatActivity {
                         startActivity(intent);*/
                     }
 
+
+
                     internetConnected = isInternetConnected(context);
                     if (internetConnected) {
 
+                        if(imageUrl.length() > 4) {
+                            String up_file_name = user_email_code + "-" + post_session + "-" + Math.random();
+                            files_uploadMultipart(up_file_name, result);
+                        }
+
                         String booking_sess = "" + Math.random();
                         String form_category = "transfer";
-                        String jsonString = String.valueOf(post_b); Log.d("jsonString", form_category + " -- " + jsonString);
-                        String resultJson = base64Encode(jsonString); Log.d("jsonString", form_category + " -- " + resultJson);
+                        String jsonString = String.valueOf(post_b); /*Log.d("jsonString", form_category + " -- " + jsonString);*/
+                        String resultJson = base64Encode(jsonString); /*Log.d("jsonString", form_category + " -- " + resultJson);*/
                         asyncForm = new WebAsyncPost(context, user_email, form_category, resultJson, POSTS_API_URL, "POST");
                         asyncForm.execute();
+
+
+
+
+
 
                         //func_showAlerts(context, "Saved to server.", "");
                     } else {
@@ -490,12 +542,13 @@ public class PostActivity extends AppCompatActivity {
             broadcastReceiver =new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    tvlongitude.append("" + intent.getExtras().get("gps_longitude")); /*"/n" +*/
-                    tvlatitude.append("" + intent.getExtras().get("gps_latitude"));
-                    /*Log.d("coordinates",tvlongitude.toString());*/
 
+                    /*tvlongitude.append("" + intent.getExtras().get("gps_longitude"));
+                    tvlatitude.append("" + intent.getExtras().get("gps_latitude"));*/
 
-
+                    tvlatitude.setText("" + intent.getExtras().get("gps_latitude"));
+                    tvlongitude.setText("" + intent.getExtras().get("gps_longitude"));
+                    Log.d("lat_long",tvlatitude.toString() + " - " + tvlongitude.toString());
                 }
             };
             registerReceiver(broadcastReceiver,new IntentFilter("location_update"));
@@ -554,6 +607,7 @@ public class PostActivity extends AppCompatActivity {
                     String path = null;
 
                     Intent intent = new   Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                     //startActivityForResult(intent, 2);
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -569,8 +623,8 @@ public class PostActivity extends AppCompatActivity {
                                 photoFile);
                         //fileUri = Uri.fromFile(photoFile);
 
-                        Log.d("file_choose_Uri", String.valueOf(fileUri));
-                        Log.d("file_choose_Path", path);
+                        //Log.d("file_choose_Uri", String.valueOf(fileUri));
+                        //Log.d("file_choose_Path", path);
 
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
@@ -600,54 +654,27 @@ public class PostActivity extends AppCompatActivity {
 
                 String picturePath = filePath;
 
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                /*Bitmap*/ bitmap = (BitmapFactory.decodeFile(picturePath));
                 Log.w("image_path_a", picturePath+"");
-                imageView.setImageBitmap(thumbnail);
-                imageUrl = picturePath;
+                //imageView.setImageBitmap(bitmap);
 
-                /*
-                File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles()) {
-                    if (temp.getName().equals("temp.jpg")) {
-                        f = temp;
-                        break;
-                    }
+                //imageUrl = picturePath;
+
+		        ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                if (imageUrl!=null){
+                    Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                    Log.w("image_path_a", imageUrl+"");
+                    imageView.setImageBitmap(thumbnail);}
+                else {
+                    imageView.setVisibility(View.GONE);
                 }
-                try {
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
-                            bitmapOptions);
-                    imageView.setImageBitmap(bitmap);
-                    Intent intent =new Intent(getBaseContext(),MainActivity.class);
-                    intent.putExtra("data",bitmap);
-
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "OIReportool" + File.separator + "default";
-
-                    f.delete();
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
-                    imageUrl = String.valueOf(file);
-                    Log.d("image_path_a",imageUrl);
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-                        outFile.flush();
-                        outFile.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (linearLayout != null) {
+                    linearLayout.addView(imageView);
+                    imageUrl = picturePath;
                 }
-                */
+
 
             } else if (requestCode == 2) {
 
@@ -655,13 +682,30 @@ public class PostActivity extends AppCompatActivity {
                 String[] filePath = { MediaStore.Images.Media.DATA };
                 Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
                 c.moveToFirst();
+
                 int columnIndex = c.getColumnIndex(filePath[0]);
-                String picturePath = c.getString(columnIndex);
+                picturePath = c.getString(columnIndex);
+
                 c.close();
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+
+                Bitmap bitmap_one = (BitmapFactory.decodeFile(picturePath));
                 Log.w("image_path_b", picturePath+"");
-                imageView.setImageBitmap(thumbnail);
+
+
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                imageView.setImageBitmap(bitmap_one);
                 imageUrl = picturePath;
+
+                bitmap = bitmap_one;
+
+                if (linearLayout != null) {
+                    linearLayout.addView(imageView);
+                    imageUrl = picturePath;
+                }
+
+
             }
         }
     }
@@ -669,7 +713,7 @@ public class PostActivity extends AppCompatActivity {
 
     public void addSavedChips(String de_chips){
         //String tags = de_chips.replace("|", "; ");
-        Log.d("chips_saved_b", chips_saved);
+        //Log.d("chips_saved_b", chips_saved);
 
         String[] pieces = chips_saved.split("\\|");
 
@@ -764,6 +808,22 @@ public class PostActivity extends AppCompatActivity {
             //etTitle.setText(jsonObject.getString("record_date"));
             tvlongitude.setText(jsonObject.getString("post_longitude"));
             tvlatitude.setText(jsonObject.getString("post_latitude"));
+//            String imageUrl=jsonObject.getString("image_url");
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            imageView.setImageResource(R.drawable.inducesmilelog);
+            String imageUrl=jsonObject.getString("image_url");
+
+            if (imageUrl!=null){
+                Bitmap thumbnail = (BitmapFactory.decodeFile(imageUrl));
+                Log.w("image_path_a", imageUrl+"");
+                imageView.setImageBitmap(thumbnail);}
+            else {
+                imageView.setVisibility(View.GONE);
+            }
+            if (linearLayout != null) {
+                linearLayout.addView(imageView);
+            }
             //projects.setSelection();
         }
         catch (JSONException e) {
@@ -786,7 +846,7 @@ public class PostActivity extends AppCompatActivity {
     public boolean CheckPermissions() {
             if (Build.VERSION.SDK_INT >=23 && ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
 
-                requestPermissions(new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CAMERA,WRITE_EXTERNAL_STORAGE,RECORD_AUDIO},100);
+                requestPermissions(new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CAMERA,WRITE_EXTERNAL_STORAGE,RECORD_AUDIO,READ_EXTERNAL_STORAGE, FOREGROUND_SERVICE},100);
                 return true;
             }
             return false;
@@ -797,8 +857,8 @@ public class PostActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100){
-            if (grantResults [0] == PackageManager.PERMISSION_GRANTED && grantResults [1]== PackageManager.PERMISSION_GRANTED  && grantResults [2]== PackageManager.PERMISSION_GRANTED && grantResults [3]== PackageManager.PERMISSION_GRANTED&&grantResults [4]== PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
+            if (grantResults [0] == PackageManager.PERMISSION_GRANTED && grantResults [1]== PackageManager.PERMISSION_GRANTED  && grantResults [2]== PackageManager.PERMISSION_GRANTED && grantResults [3]== PackageManager.PERMISSION_GRANTED&&grantResults [4]== PackageManager.PERMISSION_GRANTED &&grantResults [5]== PackageManager.PERMISSION_GRANTED){
+                /*Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();*/
 
             }
         }
@@ -812,7 +872,7 @@ public class PostActivity extends AppCompatActivity {
         StringRequest stringRequest=new StringRequest(Request.Method.POST, POSTS_API_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                Log.d("post response",s);
+                //Log.d("post response",s);
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     int user_id=jsonObject.getInt("user_id");
@@ -851,15 +911,165 @@ public class PostActivity extends AppCompatActivity {
 
 
     public void asyncResponse(String response){
+        int num_response = Integer.parseInt(response);
 
-        if(response.equals("Success")){
+        if(response.equals("Success") ||  num_response > 0){
             func_showAlerts(context, "Saved to server.", "");
         } else {
             func_showAlerts(context, "Save to server FAILED!", "warning");
         }
-        Log.d("asyncResponse_Transfer", response);
+        //Log.d("asyncResponse_Transfer", response);
         //db.updateFormPostSync(session_id, form_category);
     }
+
+
+
+
+
+    /*
+     * ==============================================================================
+     * RAGE UPLOAD FUNCTION
+     * ==============================================================================
+     * */
+
+    /*
+     * This is the method responsible for image upload
+     * We need the full image path and the name for the image in this method
+     * */
+    public void files_uploadMultipart(String params, String post_entry_id) {
+        //getting name for the image
+        String name = params; //editText.getText().toString().trim();
+
+        //getting the actual path of the image
+        String path = imageUrl; //files_uploadGetPath(fileUri);
+        //String path = filePath; //getPath(filePath);
+
+
+        //Log.d("upload_Uri", String.valueOf(fileUri));
+        //Log.d("upload_Path", path);
+
+        /*try {
+
+            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
+            uploadBitmap(bitmap);
+
+        } catch (Exception exc) {
+            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+*/
+
+        //Uploading code
+        try {
+            String uploadId = UUID.randomUUID().toString();
+
+            //Creating a multi part request
+            MultipartUploadRequest uploadRequest = new MultipartUploadRequest(this, uploadId, CONF_FILE_UPLOAD)
+                    .addFileToUpload(path, "image") //Adding file
+                    .addParameter("name", name) //Adding text parameter to the request
+                    .addParameter("post_entry_id", post_entry_id)
+                    .addParameter("user_id", user_email)
+                    .setMaxRetries(3);
+
+            // For Android > 8, we need to set an Channel to the UploadNotificationConfig.
+            // So, here, we create the channel and set it to the MultipartUploadRequest
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+                NotificationChannel channel = new NotificationChannel("Upload", "Upload service", NotificationManager.IMPORTANCE_DEFAULT);
+                notificationManager.createNotificationChannel(channel);
+
+                UploadNotificationConfig notificationConfig = new UploadNotificationConfig();
+                notificationConfig.setNotificationChannelId("Upload");
+                uploadRequest.setNotificationConfig(notificationConfig);
+
+            } else {
+                // If android < Oreo, just set a simple notification (or remove if you don't wanna any notification
+                // Notification is mandatory for Android > 8
+                uploadRequest.setNotificationConfig(new UploadNotificationConfig());
+            }
+
+            uploadRequest.startUpload(); //Starting the upload
+
+
+
+            Toast.makeText(this, "Uploaded", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception exc) {
+            Toast.makeText(this, "NOT uploaded " + exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+
+    public String files_uploadGetPath(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+        cursor.close();
+
+        cursor = getContentResolver().query(
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
+    }
+
+
+
+    public byte[] getFileDataFromDrawable(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+
+    private void uploadBitmap(final Bitmap bitmap) {
+
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, CONF_FILE_UPLOAD,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        //Log.d("uploadBitmap_resp", String.valueOf(response.data));
+                        try {
+                            JSONObject obj = new JSONObject(new String(response.data));
+
+                            //Log.d("uploadBitmap", String.valueOf(obj));
+
+                            Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            //Log.d("uploadBitmap_err", e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                       // Log.d("uploadBitmap_err", error.getMessage());
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.e("GotError",""+error.getMessage());
+                    }
+                }) {
+
+
+            @Override
+            protected Map<String, VolleyMultipartRequest.DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                params.put("image", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        Volley.newRequestQueue(this).add(volleyMultipartRequest);
+    }
+
+
 
 
 
@@ -875,8 +1085,8 @@ public class PostActivity extends AppCompatActivity {
     public void files_getCamera() { /*View v*/
 
         /*imageView = findViewById(R.id.login_logo);*/
-        String[] email_pieces = (String.valueOf(user_email)).split("@");
-        file_hash = email_pieces[0];
+        /*String[] email_pieces = (String.valueOf(user_email)).split("@");
+        file_hash = email_pieces[0];*/
 
         String path = null;
 
@@ -895,8 +1105,8 @@ public class PostActivity extends AppCompatActivity {
                     photoFile);
             /*fileUri = Uri.fromFile(photoFile);*/
 
-            Log.d("fileUri", String.valueOf(fileUri));
-            Log.d("filePath", path);
+            //Log.d("fileUri", String.valueOf(fileUri));
+            //Log.d("filePath", path);
 
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); //fileUri
 
@@ -921,8 +1131,8 @@ public class PostActivity extends AppCompatActivity {
         String de_path = files_getExternalSdCardPath();
         //String de_path_b =  files_test_getExternalStoragePath();
 
-        Log.d("de_path", de_path);
-        Log.d("de_path_b", res_nuru_folder.getPath());
+        //Log.d("de_path", de_path);
+        //Log.d("de_path_b", res_nuru_folder.getPath());
 
         mediaStorageDir = new File(de_path + "/nuru/" + "/nuru_images/" );
         //mediaStorageDir = new File(res_image_folder );
@@ -935,7 +1145,7 @@ public class PostActivity extends AppCompatActivity {
             mediaStorageDir.mkdir();
 
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("NuruCamera", "failed to create directory");
+                //Log.d("NuruCamera", "failed to create directory");
                 return null;
             }
         }
@@ -943,12 +1153,17 @@ public class PostActivity extends AppCompatActivity {
         String fileName;
         String dateString = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
 
-        if (file_hash != null) {
+
+        fileName = user_email_code + "_" + dateString;
+        file_hash = dateString;
+
+
+        /*if (file_hash != null) {
             fileName = file_hash + "_" + dateString;
         }
         else {
             fileName = dateString;
-        }
+        }*/
 
         File mediaFile;
         String mediaDir = mediaStorageDir.getPath(); //.replace("/data/data/", "/");
@@ -1078,7 +1293,8 @@ public class PostActivity extends AppCompatActivity {
             sdCardFile = new File(path);
         }
         else {
-            sdCardFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+            /*sdCardFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath());*/
+	    sdCardFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
         }
 
         return sdCardFile;

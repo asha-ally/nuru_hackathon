@@ -63,7 +63,7 @@
                 android:text="date value here"
                 android:background="@color/colorTransparent"
                 />
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/post_imageview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:scaleType="fitXY"
                 android:alpha="1"
                 android:visibility="visible"
-                />
+                /> -->
 
 
         </RelativeLayout>
@@ -172,23 +172,23 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:paddingLeft="10dp">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingBottom="7dp"
                     android:id="@+id/latitude"
-                    android:text="1.8219"
+                    android:text=""
                     android:clickable="true"
                     />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingBottom="7dp"
                     android:id="@+id/spacer_latlong"
                     android:text=", "
@@ -197,10 +197,10 @@
                     />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:id="@+id/longitude"
-                    android:text="36.2921"
+                    android:text=""
                     android:layout_toRightOf="@id/spacer_latlong"
                     />
 
@@ -265,14 +265,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:id="@+id/container"
+            android:orientation="horizontal"
+            android:padding="@dimen/item_offset"
             >
-            <fragment
+            <!--<fragment
                 android:id="@+id/maps"
                 class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="330dp"
-                />
+                /> -->
 
         </LinearLayout>
 

@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/wd_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorAccent"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/Theme.AppCompat.Light"
+            app:title="title"
+            android:textAlignment="center"
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_gravity="center"
+        >
+
+
+    <ImageView
+        android:id="@+id/wd_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/item_offset" />
+
+    <TextView
+        android:id="@+id/wd_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/wd_image"
+        android:text="onyesha hapa" />
+
+        <Button
+            android:id="@+id/wd_button_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/wd_text"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_centerHorizontal="true"
+            android:text=" Ok " />
+
+    </RelativeLayout>
+
+</LinearLayout>

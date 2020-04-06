@@ -19,11 +19,12 @@ public class Post {
     public String post_project;
     public String post_latitude;
     public String post_longitude;
+    public String post_session;
 
 
 
 
-    public Post(int post_Id, String post_title, String post_details, String record_date, String userId, String post_imageUrl, String post_audioUrl, String post_category, String post_tag, String post_project, String post_latitude, String post_longitude,String Text) {
+    public Post(int post_Id, String post_title, String post_details, String record_date, String userId, String post_imageUrl, String post_audioUrl, String post_category, String post_tag, String post_project, String post_latitude, String post_longitude,String post_session) {
         this.post_Id = post_Id;
         this.post_title = post_title;
         this.post_details = post_details;
@@ -36,6 +37,7 @@ public class Post {
         this.post_project = post_project;
         this.post_longitude = post_longitude;
         this.post_latitude= post_latitude;
+        this.post_session = post_session;
 
     }
 
@@ -76,11 +78,11 @@ public class Post {
     }
 
     public String getRecord_date() {
-        return record_date.toString();
+        return record_date;
     }
 
     public void setRecord_date(String record_date) {
-        this.record_date = record_date.toString();
+        this.record_date = record_date;
     }
 
     public String getUserId() {
@@ -146,6 +148,14 @@ public class Post {
         this.post_longitude = post_longitude;
     }
 
+    public String getPost_session() {
+        return post_session;
+    }
+
+    public void setPost_session(String post_session) {
+        this.post_session = post_session;
+    }
+
 
     public JSONObject getPostAll(){
 
@@ -159,6 +169,8 @@ public class Post {
             postData.put("record_date", this.record_date);
             postData.put("post_longitude", this.post_longitude);
             postData.put("post_latitude", this.post_latitude);
+            postData.put("post_session", this.post_session);
+		postData.put("image_url",this.post_imageUrl);
 
 
         } catch (JSONException e) {

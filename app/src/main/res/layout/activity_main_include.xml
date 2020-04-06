@@ -5,6 +5,8 @@
     android:layout_height="fill_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <com.google.android.material.appbar.AppBarLayout
@@ -68,17 +70,42 @@
 
 
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin">
 
-    <ImageView
+        <!--android:layout_gravity="bottom|end"-->
+        <ImageView
             android:id="@+id/fab"
             android:layout_width="43dp"
             android:layout_height="43dp"
-            android:layout_gravity="bottom|end"
+
             android:contentDescription="Post New"
             android:layout_margin="@dimen/fab_margin"
+            android:tooltipText="Add Report"
             android:src="@drawable/ic_add_circle_black_24dp" />
 
+        <!--android:background="@drawable/btn_round"-->
+        <!--android:background="@color/colorPrimary"-->
 
+        <TextView
+            android:layout_toRightOf="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="-30dp"
+
+            android:paddingTop="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="5dp"
+            android:text="Add Report"
+            android:paddingLeft="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 
 

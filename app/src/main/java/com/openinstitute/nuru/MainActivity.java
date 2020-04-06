@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.Menu;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,6 +70,8 @@ import java.util.List;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.FOREGROUND_SERVICE;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.openinstitute.nuru.app.AppFunctions.func_showAlerts;
@@ -90,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     postsAdapter adapter;
     ImageView icon;
     TextView textView;
+
+    JSONArray jsonArray;
 
     String user_email;
     Boolean user_logged;
@@ -123,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         if(user_email == null){
-            Log.d("user_email", "hakuna ");
+            //Log.d("user_email", "hakuna ");
             show_Login();
             finish();
         } else {
-            Log.d("user_email", "iko " + user_email);
+            //Log.d("user_email", "iko " + user_email);
 
 
             NavigationView navigationView = findViewById(R.id.nav_view);
@@ -164,11 +169,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             db = new DatabaseHelper(this);
 
 
-            show_About();
+            /*show_About();*/
 
             //all_posts = db.getRecords(db.TABLE_POSTS);
             populateRv();
 
+            show_About();
 
             /*func_showAlerts(context, "Welcome back", "warning" );*/
 
@@ -237,13 +243,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private  void populateRv(){
 
-        all_posts = db.getRecords(db.TABLE_POSTS, db.KEY_POST_ID, user_email);
+        all_posts = db.getRecords(DatabaseHelper.TABLE_POSTS, DatabaseHelper.KEY_POST_ID, user_email);
 
 
         //JSONObject all_posts = db.getRecords(db.TABLE_POSTS);
         Iterator x = all_posts.keys();
         List<com.openinstitute.nuru.Database.Post> data =new ArrayList<>();
-        JSONArray jsonArray = new JSONArray();
+        jsonArray = new JSONArray();
 
         try {
             jsonArray = all_posts.getJSONArray("records");
@@ -268,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 String picha  = (json_data.getString("post_imageUrl") == null) ? "" : json_data.getString("post_imageUrl");
                 String picha_len = String.valueOf(picha.length());
-                Log.d("picha_len", picha_len);
+                /*Log.d("picha_len", picha_len);*/
 
 
                 post.post_details = json_data.getString("post_detail");
@@ -280,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 post.post_tag = json_data.getString("post_tag");
                 post.post_Id = json_data.getInt("post_Id");
                 post.post_imageUrl =json_data.getString("post_imageUrl"); /*post_images*/
+                post.post_session =json_data.getString("post_session");
 
                 postList.add(post);
             } catch (JSONException e) {
@@ -312,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         user_email = preferences.getString("user_email", null);
         user_logged = preferences.getBoolean("user_logged", false);
 
-        all_posts = db.getRecords(db.TABLE_POSTS, db.KEY_POST_ID, user_email);
+        all_posts = db.getRecords(DatabaseHelper.TABLE_POSTS, DatabaseHelper.KEY_POST_ID, user_email);
         /*func_showToast(this, "resumed");*/
         /*Log.d("all_posts", all_posts.toString());*/
 
@@ -350,8 +357,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void show_About(){
 
+        /*func_showToast(this, "jsonArray " + String.valueOf(jsonArray.length()));*/
+
+        String message_title = "Welcome to Nuru.live";
+        String message_extra = "";
+
+        int jsonRecs = jsonArray.length();
+        if(jsonRecs == 0){
+            message_extra = "\n\n" + "Click on   '+'  below to submit a new report.";
+        }
+
         String message = "Nuru is helping real time reporting on COVID-19 in Kenya\n\n" +
-                "Nuru - Kiswahili for 'Light' (nuru.live) – is a platform that allows community monitors around the world to make observations about the social and human rights impact of crises as the Covid-19 pandemic.";
+                "Nuru - Kiswahili for 'Light' (nuru.live) – is a platform that allows community monitors around the world " +
+                "to make observations about the social and human rights impact of crises as the Covid-19 pandemic." + message_extra;
+
+        final Dialog dialog_welcome = new Dialog(context);
+        dialog_welcome.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_welcome.setContentView(R.layout.dialog_welcome);
+
+        Toolbar wd_toolbar = dialog_welcome.findViewById(R.id.wd_toolbar);
+        wd_toolbar.setTitle(message_title);
+        wd_toolbar.setEnabled(false);
+
+        final TextView txt_wd_text = dialog_welcome.findViewById(R.id.wd_text);
+        txt_wd_text.setText(message);
+        final Button btn_wd_button_ok = dialog_welcome.findViewById(R.id.wd_button_ok);
+
+
+        btn_wd_button_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_welcome.dismiss();
+            }
+        });
+
+        dialog_welcome.show();
+
+
+        /*
+        // @@ ALERTDIALOG
         // custom dialog
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 
@@ -368,14 +412,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         dialog.cancel();
 
                     }
-                })
-                /*.setNegativeButton("CANCEL",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        *//*Toast.makeText(this, "CANCEL button click ", Toast.LENGTH_SHORT).show();*//*
-
-                        dialog.cancel();
-                    }
-                })*/;
+                }) ;
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -385,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TextView messageText = alertDialog.findViewById(android.R.id.message);
         messageText.setGravity(Gravity.CENTER);
-
+*/
 
     }
 
@@ -508,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     f.delete();
                     OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
+                    File file = new File(path, System.currentTimeMillis() + ".jpg");
                     try {
                         outFile = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
@@ -545,7 +582,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean CheckPermissions() {
         if (Build.VERSION.SDK_INT >=23 && ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
 
-            requestPermissions(new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CAMERA,WRITE_EXTERNAL_STORAGE,RECORD_AUDIO},100);
+            requestPermissions(new String[]{ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CAMERA,WRITE_EXTERNAL_STORAGE,RECORD_AUDIO,FOREGROUND_SERVICE},100);
             return true;
         }
         return false;
@@ -556,7 +593,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100){
-            if (grantResults [0] == PackageManager.PERMISSION_GRANTED && grantResults [1]== PackageManager.PERMISSION_GRANTED  && grantResults [2]== PackageManager.PERMISSION_GRANTED && grantResults [3]== PackageManager.PERMISSION_GRANTED&&grantResults [4]== PackageManager.PERMISSION_GRANTED){
+            /*&& grantResults [5]== PackageManager.PERMISSION_GRANTED*/
+            if (grantResults [0] == PackageManager.PERMISSION_GRANTED && grantResults [1]== PackageManager.PERMISSION_GRANTED  && grantResults [2]== PackageManager.PERMISSION_GRANTED && grantResults [3]== PackageManager.PERMISSION_GRANTED&& grantResults [4]== PackageManager.PERMISSION_GRANTED ){
                 Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
 
             }

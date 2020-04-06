@@ -6,11 +6,16 @@ package com.openinstitute.nuru.app;
 
 public interface Globals {
 
-    public static final String CONF_APP_NAME = "com.openinstitute.nuru";
-    public static final String msg_no_internet = "Internet not connected!";
-    public static final String msg_deal_saved = "Added to Saved Deals.";
+    String CONF_APP_NAME = "com.openinstitute.nuru";
+    String msg_no_internet = "Internet not connected!";
+    String msg_deal_saved = "Added to Saved Deals.";
 
-    public static final int MYINT_1 = 1;
+    String CONF_POSTS_API_PUSH = "https://nuru.live/dashboard/api/ajbk_post.php";
+
+    String CONF_FILE_UPLOAD = "https://nuru.live/dashboard/api/ajbk_upload.php";
+    //public static final String CONF_FILE_UPLOAD = "http://10.0.2.2/oireporting_web/api/ajbk_upload.php";
+
+    int MYINT_1 = 1;
 
     /*Rage Chips*/
     String[] CONF_POST_TAGS = new String[]{
