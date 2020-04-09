@@ -148,9 +148,7 @@ public class PostActivity extends AppCompatActivity {
 
 
 
-    private String POSTS_API_URL="https://nuru.live/dashboard/api/ajbk_post.php";
-    //private String POSTS_API_URL="http://sand-box.online/nuru/api/ajbk_post.php";
-    //private String POSTS_API_URL="http://10.0.2.2/oireporting_web/api/ajbk_post.php";
+    private String POSTS_API_URL="http://sand-box.online/nuru/api/ajbk_post.php";
 
     Bundle bundle;
     String bundleData;

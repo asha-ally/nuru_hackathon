@@ -488,8 +488,6 @@ public class DatabaseHelper extends  SQLiteOpenHelper {
     }
 
 
-
-
     /* @Change account password */
     public boolean changeAccountPassword(String user_email, String user_pass, String new_pass) {
 
